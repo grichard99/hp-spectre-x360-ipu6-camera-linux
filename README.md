@@ -7,6 +7,26 @@ no proprietary blobs beyond the IPU6 firmware already in linux-firmware.
 The fix is a one-line timing change in the kernel's `hi556` sensor driver, shipped here as a DKMS
 module, plus a virtual webcam so that Chrome, Chromium, Discord and other V4L2-only apps can use it.
 
+## TL;DR: just make my camera work
+
+If you are on Arch Linux (or Omarchy) and your camera light turns on but you never get a picture,
+open a terminal and paste these four lines, one at a time:
+
+```
+git clone https://github.com/grichard99/hp-spectre-x360-ipu6-camera-linux
+cd hp-spectre-x360-ipu6-camera-linux
+./install.sh
+qcam
+```
+
+It will ask for your password a few times. When `qcam` opens a window showing you, it worked. Close it.
+
+In any app that uses the camera (Chrome, Discord, Meet, Zoom, etc.) choose the camera called
+**HP Wide Vision HD Camera**. Ignore any camera called `hi556` or `ipu6`.
+
+That is all. It stays fixed after reboots and kernel updates. To undo it, run `./uninstall.sh` from
+the same folder.
+
 Tested on:
 
 | Component | Version |
