@@ -1,0 +1,52 @@
+--- a/drivers/media/i2c/hi556.c
++++ b/drivers/media/i2c/hi556.c
+@@ -11,6 +11,13 @@
+ #include <linux/regulator/consumer.h>
+ #include <linux/unaligned.h>
+ 
++static int settle_ms = 300; /* HP Spectre x360 14-ef: Lattice MIPI aggregator needs >50 ms after reset */
++module_param(settle_ms, int, 0644);
++static int reset_first;
++module_param(reset_first, int, 0644);
++static int pre_stream_ms;
++module_param(pre_stream_ms, int, 0644);
++
+ #include <media/v4l2-ctrls.h>
+ #include <media/v4l2-device.h>
+ #include <media/v4l2-fwnode.h>
+@@ -1001,6 +1008,8 @@
+ 	const struct hi556_reg_list *reg_list;
+ 	int link_freq_index, ret;
+ 
++	if (pre_stream_ms)
++		msleep(pre_stream_ms);
+ 	ret = hi556_identify_module(hi556);
+ 	if (ret)
+ 		return ret;
+@@ -1298,6 +1307,9 @@
+ 	if (ret)
+ 		return ret;
+ 
++	if (reset_first && hi556->reset_gpio)
++		gpiod_set_value_cansleep(hi556->reset_gpio, 0);
++
+ 	ret = regulator_bulk_enable(ARRAY_SIZE(hi556_supply_names),
+ 				    hi556->supplies);
+ 	if (ret) {
+@@ -1306,13 +1318,13 @@
+ 		return ret;
+ 	}
+ 
+-	if (hi556->reset_gpio) {
+-		/* Assert reset for at least 2ms on back to back off-on */
++	if (!reset_first && hi556->reset_gpio) {
+ 		usleep_range(2000, 2200);
+ 		gpiod_set_value_cansleep(hi556->reset_gpio, 0);
+ 	}
+ 
+-	usleep_range(5000, 5500);
++	msleep(settle_ms);
++	dev_info(dev, "powered on: settle_ms=%d reset_first=%d\n", settle_ms, reset_first);
+ 	return 0;
+ }
+ 

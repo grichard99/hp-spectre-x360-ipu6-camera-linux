@@ -1,0 +1,15 @@
+[Unit]
+Description=Virtual webcam relay (libcamera hi556 -> /dev/video42) for HP Spectre camera
+After=pipewire.service
+Before=wireplumber.service
+
+[Service]
+Type=simple
+ExecStartPre=/bin/sh -c 'for i in $(seq 1 20); do test -e /dev/video42 && exit 0; sleep 0.5; done; exit 1'
+ExecStart=/usr/bin/v4l2-relayd -i "libcamerasrc ! video/x-raw,width=1920,height=1080 ! videoconvert ! videoscale" -o "appsrc name=appsrc caps=video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! videoconvert ! v4l2sink name=v4l2sink device=/dev/video42 sync=false"
+ExecStartPost=/bin/sh -c "sleep 2"
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target
