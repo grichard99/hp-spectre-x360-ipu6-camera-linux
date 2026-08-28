@@ -9,7 +9,7 @@ module, plus a virtual webcam so that Chrome, Chromium, Discord and other V4L2-o
 
 ## TL;DR: just make my camera work
 
-If you are on Arch Linux (or Omarchy) and your camera light turns on but you never get a picture,
+If you are on Arch Linux and your camera light turns on but you never get a picture,
 open a terminal and paste these four lines, one at a time:
 
 ```
@@ -33,7 +33,7 @@ Tested on:
 |---|---|
 | Laptop | HP Spectre x360 2-in-1 14-ef0xxx, BIOS F.27 |
 | Sensor | Hynix hi556 (ACPI `INT3537`), IPU6 CSI-2 port 3, 2 lanes |
-| Distro | Arch Linux (Omarchy) |
+| Distro | Arch Linux |
 | Kernel | 7.1.9 |
 | libcamera | 0.7.2 |
 | PipeWire | 1.6.8 |
